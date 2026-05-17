@@ -57,7 +57,7 @@ body { background: #0b0b0b; color: #eee; font-family: 'DM Sans', sans-serif; fon
 
 /* Banner */
 .hero-banner {
-  background-color: rgb(147, 153, 156);
+  background-color:  #811419;
   filter: saturate(1.05) contrast(1.02);
   width: 100%;
   overflow: hidden;
