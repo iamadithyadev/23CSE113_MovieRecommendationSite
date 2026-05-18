@@ -6,6 +6,11 @@ const PLACEHOLDER = "https://placehold.co/300x450/151515/888?text=No+Image";
 
 let currentUser = null;
 let favorites = [];
+let adminSettings = {
+  showTrending: true,
+  showTopRated: true,
+  showUpcoming: true
+};
 
 // ---------- Auth ----------
 function getUsers() {
@@ -66,6 +71,38 @@ function doSignup() {
 function logout() {
   localStorage.removeItem("currentUser");
   window.location.href = "index.html";
+}
+function loadAdminSettings() {
+  const saved = localStorage.getItem("adminSettings");
+  if (saved) {
+    adminSettings = JSON.parse(saved);
+  }
+  // Update checkbox states if modal is open (optional)
+  const trendCheck = document.getElementById("toggleTrending");
+  if (trendCheck) trendCheck.checked = adminSettings.showTrending;
+  const topCheck = document.getElementById("toggleTopRated");
+  if (topCheck) topCheck.checked = adminSettings.showTopRated;
+  const upCheck = document.getElementById("toggleUpcoming");
+  if (upCheck) upCheck.checked = adminSettings.showUpcoming;
+}
+
+// Save settings and refresh home page
+function applyAdminSettings() {
+  adminSettings.showTrending = document.getElementById("toggleTrending").checked;
+  adminSettings.showTopRated = document.getElementById("toggleTopRated").checked;
+  adminSettings.showUpcoming = document.getElementById("toggleUpcoming").checked;
+  localStorage.setItem("adminSettings", JSON.stringify(adminSettings));
+  bootstrap.Modal.getInstance(document.getElementById("adminModal")).hide();
+  showHome();  // refresh home with new settings
+}
+
+// Open admin modal (called from admin button)
+function openAdminModal() {
+  // Sync checkboxes with current settings
+  document.getElementById("toggleTrending").checked = adminSettings.showTrending;
+  document.getElementById("toggleTopRated").checked = adminSettings.showTopRated;
+  document.getElementById("toggleUpcoming").checked = adminSettings.showUpcoming;
+  new bootstrap.Modal(document.getElementById("adminModal")).show();
 }
 
 // Check auth on every page (except index which handles login)
@@ -163,19 +200,46 @@ function toggleFavorite(movieId) {
 // ---------- Page-specific initializers ----------
 async function initHome() {
   if (!checkAuth()) return;
+  
+  // Show admin button & load settings if admin
+  const adminBtn = document.getElementById("adminPanelBtn");
+  if (currentUser?.role === 'admin') {
+    if (adminBtn) adminBtn.style.display = "inline-block";
+    loadAdminSettings();   // make sure adminSettings is synced
+  } else {
+    if (adminBtn) adminBtn.style.display = "none";
+  }
+
   const main = document.getElementById("mainContent");
   main.innerHTML = `<div class="hero"><h1>DISCOVER <span>INDIAN</span> CINEMA</h1><p>Bollywood · Tollywood · Kollywood</p></div><div class="container" id="dynamicContent">${showLoader()}</div>`;
+  
   const today = new Date().toISOString().slice(0,10);
   const indiaParams = { with_origin_country: "IN", region: "IN" };
-  const [trending, topRated, upcoming] = await Promise.all([
-    fetchData("/discover/movie", { sort_by: "popularity.desc", ...indiaParams }),
-    fetchData("/discover/movie", { sort_by: "vote_average.desc", "vote_count.gte": 50, ...indiaParams }),
-    fetchData("/discover/movie", { sort_by: "release_date.asc", "primary_release_date.gte": today, ...indiaParams })
-  ]);
+  
+  // Build promises based on adminSettings
+  let promises = {};
+  if (adminSettings.showTrending) {
+    promises.trending = fetchData("/discover/movie", { sort_by: "popularity.desc", ...indiaParams });
+  }
+  if (adminSettings.showTopRated) {
+    promises.topRated = fetchData("/discover/movie", { sort_by: "vote_average.desc", "vote_count.gte": 50, ...indiaParams });
+  }
+  if (adminSettings.showUpcoming) {
+    promises.upcoming = fetchData("/discover/movie", { sort_by: "release_date.asc", "primary_release_date.gte": today, ...indiaParams });
+  }
+  const results = await Promise.all(Object.values(promises));
+  const keys = Object.keys(promises);
   let contentHtml = '';
-  contentHtml += `<div class="section-title"><span>🔥 Trending in India</span></div>${createMovieGrid(trending?.results || [])}`;
-  contentHtml += `<div class="section-title"><span>⭐ Top Rated Indian Movies</span></div>${createMovieGrid(topRated?.results || [])}`;
-  contentHtml += `<div class="section-title"><span>📅 Upcoming Indian Releases</span></div>${createMovieGrid(upcoming?.results || [])}`;
+  for (let i = 0; i < keys.length; i++) {
+    const key = keys[i];
+    const data = results[i];
+    if (key === 'trending') contentHtml += `<div class="section-title"><span>🔥 Trending in India</span></div>${createMovieGrid(data?.results || [])}`;
+    else if (key === 'topRated') contentHtml += `<div class="section-title"><span>⭐ Top Rated Indian Movies</span></div>${createMovieGrid(data?.results || [])}`;
+    else if (key === 'upcoming') contentHtml += `<div class="section-title"><span>📅 Upcoming Indian Releases</span></div>${createMovieGrid(data?.results || [])}`;
+  }
+  if (!adminSettings.showTrending && !adminSettings.showTopRated && !adminSettings.showUpcoming) {
+    contentHtml = `<div class="empty-state">Admin has hidden all sections. Go to Admin panel to enable.</div>`;
+  }
   document.getElementById("dynamicContent").innerHTML = contentHtml;
 }
 
