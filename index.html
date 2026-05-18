@@ -115,12 +115,19 @@
 
 <script src="shared.js"></script>
 <script>
-  // Check if already logged in
   const saved = localStorage.getItem("currentUser");
   if (saved) {
+    currentUser = JSON.parse(saved);
+    favorites = JSON.parse(localStorage.getItem(`favs_${currentUser.name}`) || "[]");
+    if (currentUser.role === 'admin') {
+      loadAdminSettings();
+      document.getElementById("adminPanelBtn").style.display = "inline-block";
+    } else {
+      document.getElementById("adminPanelBtn").style.display = "none";
+    }
     document.getElementById("loginPage").style.display = "none";
     document.getElementById("appShell").style.display = "block";
-    initHome();
+    initHome();   // call the updated initHome
   } else {
     document.getElementById("loginPage").style.display = "flex";
     document.getElementById("appShell").style.display = "none";
