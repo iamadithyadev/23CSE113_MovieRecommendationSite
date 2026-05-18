@@ -56,31 +56,6 @@
         <a href="about.html" class="nav-link-btn">About</a>
         <button id="adminPanelBtn" class="nav-link-btn admin-btn" style="display:none;" onclick="openAdminModal()">Admin</button>
         <button class="nav-exit-btn" onclick="logout()">Logout</button>
-        <div class="modal fade" id="adminModal" tabindex="-1">
-          <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title">Admin Panel – Section Toggles</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-              </div>
-              <div class="modal-body">
-                <div class="form-check form-switch mb-3">
-                  <input class="form-check-input" type="checkbox" id="toggleTrending" checked>
-                  <label class="form-check-label" for="toggleTrending">🔥 Show Trending Section</label>
-                </div>
-                <div class="form-check form-switch mb-3">
-                  <input class="form-check-input" type="checkbox" id="toggleTopRated" checked>
-                  <label class="form-check-label" for="toggleTopRated">⭐ Show Top Rated Section</label>
-                </div>
-                <div class="form-check form-switch mb-3">
-                  <input class="form-check-input" type="checkbox" id="toggleUpcoming" checked>
-                  <label class="form-check-label" for="toggleUpcoming">📅 Show Upcoming Section</label>
-                </div>
-                <button class="btn-red w-100" onclick="applyAdminSettings()">Save & Refresh Home</button>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   </nav>
@@ -103,7 +78,31 @@
   </footer>
 </div>
   
-
+ <div class="modal fade" id="adminModal" tabindex="-1">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Admin Panel – Section Toggles</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+              </div>
+              <div class="modal-body">
+                <div class="form-check form-switch mb-3">
+                  <input class="form-check-input" type="checkbox" id="toggleTrending" checked>
+                  <label class="form-check-label" for="toggleTrending">🔥 Show Trending Section</label>
+                </div>
+                <div class="form-check form-switch mb-3">
+                  <input class="form-check-input" type="checkbox" id="toggleTopRated" checked>
+                  <label class="form-check-label" for="toggleTopRated">⭐ Show Top Rated Section</label>
+                </div>
+                <div class="form-check form-switch mb-3">
+                  <input class="form-check-input" type="checkbox" id="toggleUpcoming" checked>
+                  <label class="form-check-label" for="toggleUpcoming">📅 Show Upcoming Section</label>
+                </div>
+                <button class="btn-red w-100" onclick="applyAdminSettings()">Save & Refresh Home</button>
+            </div>
+        </div>
+      </div>
+  </div>
 <!-- Movie Detail Modal -->
 <div class="modal fade" id="movieModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -113,6 +112,7 @@
     </div>
   </div>
 </div>
+  
 
 <script src="shared.js"></script>
 <script>
