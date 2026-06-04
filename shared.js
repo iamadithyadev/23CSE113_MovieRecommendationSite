@@ -1,4 +1,3 @@
-// ========== shared.js ==========
 const API_KEY = "a44d005848365ef66c0f555328109508";
 const API_URL = "https://api.themoviedb.org/3";
 const IMG_URL = "https://image.tmdb.org/t/p/w300";
@@ -11,8 +10,6 @@ let adminSettings = {
   showTopRated: true,
   showUpcoming: true
 };
-
-// ---------- Auth ----------
 function getUsers() {
   if (!localStorage.users) {
     localStorage.users = JSON.stringify({ 
@@ -46,7 +43,6 @@ function doLogin() {
   currentUser = { name: username, role: users[username].role };
   localStorage.setItem("currentUser", JSON.stringify(currentUser));
   favorites = JSON.parse(localStorage.getItem(`favs_${username}`) || "[]");
-  // Redirect to home page after login
   window.location.href = "index.html";
 }
 
@@ -77,7 +73,6 @@ function loadAdminSettings() {
   if (saved) {
     adminSettings = JSON.parse(saved);
   }
-  // Update checkbox states if modal is open (optional)
   const trendCheck = document.getElementById("toggleTrending");
   if (trendCheck) trendCheck.checked = adminSettings.showTrending;
   const topCheck = document.getElementById("toggleTopRated");
@@ -86,26 +81,26 @@ function loadAdminSettings() {
   if (upCheck) upCheck.checked = adminSettings.showUpcoming;
 }
 
-// Save settings and refresh home page
+
 function applyAdminSettings() {
   adminSettings.showTrending = document.getElementById("toggleTrending").checked;
   adminSettings.showTopRated = document.getElementById("toggleTopRated").checked;
   adminSettings.showUpcoming = document.getElementById("toggleUpcoming").checked;
   localStorage.setItem("adminSettings", JSON.stringify(adminSettings));
   bootstrap.Modal.getInstance(document.getElementById("adminModal")).hide();
-  showHome();  // refresh home with new settings
+  showHome();  
 }
 
-// Open admin modal (called from admin button)
+
 function openAdminModal() {
-  // Sync checkboxes with current settings
+
   document.getElementById("toggleTrending").checked = adminSettings.showTrending;
   document.getElementById("toggleTopRated").checked = adminSettings.showTopRated;
   document.getElementById("toggleUpcoming").checked = adminSettings.showUpcoming;
   new bootstrap.Modal(document.getElementById("adminModal")).show();
 }
 
-// Check auth on every page (except index which handles login)
+
 function checkAuth() {
   const saved = localStorage.getItem("currentUser");
   if (!saved) {
@@ -117,7 +112,7 @@ function checkAuth() {
   return true;
 }
 
-// ---------- API Helpers ----------
+
 async function fetchData(endpoint, params = {}) {
   try {
     const query = new URLSearchParams({ api_key: API_KEY, ...params }).toString();
@@ -134,7 +129,6 @@ function getYear(date) { return date ? date.slice(0,4) : "—"; }
 function getRating(vote) { return vote ? vote.toFixed(1) : "N/A"; }
 function showLoader() { return '<div class="loader"></div>'; }
 
-// ---------- Movie Grid ----------
 function createMovieGrid(movies) {
   if (!movies || movies.length === 0) return '<div class="empty-state">No movies found 🎬</div>';
   let html = '<div class="movie-grid">';
@@ -156,7 +150,6 @@ function createMovieGrid(movies) {
   return html;
 }
 
-// ---------- Movie Detail Modal (global) ----------
 async function showMovieDetail(movieId) {
   const modalEl = document.getElementById("movieModal");
   if (!modalEl) return;
@@ -197,15 +190,11 @@ function toggleFavorite(movieId) {
   localStorage.setItem(`favs_${currentUser.name}`, JSON.stringify(favorites));
 }
 
-// ---------- Page-specific initializers ----------
-async function initHome() {
   if (!checkAuth()) return;
-  
-  // Show admin button & load settings if admin
   const adminBtn = document.getElementById("adminPanelBtn");
   if (currentUser?.role === 'admin') {
     if (adminBtn) adminBtn.style.display = "inline-block";
-    loadAdminSettings();   // make sure adminSettings is synced
+    loadAdminSettings();   
   } else {
     if (adminBtn) adminBtn.style.display = "none";
   }
@@ -215,8 +204,6 @@ async function initHome() {
   
   const today = new Date().toISOString().slice(0,10);
   const indiaParams = { with_origin_country: "IN", region: "IN" };
-  
-  // Build promises based on adminSettings
   let promises = {};
   if (adminSettings.showTrending) {
     promises.trending = fetchData("/discover/movie", { sort_by: "popularity.desc", ...indiaParams });
@@ -291,33 +278,6 @@ async function initFavorites() {
   document.getElementById("mainContent").innerHTML = `<div class="container"><div class="section-title"><span>❤️ My Favorites (${favMovies.length})</span></div>${createMovieGrid(favMovies)}</div>`;
 }
 
-function initContact() {
-  if (!checkAuth()) return;
-  document.getElementById("mainContent").innerHTML = `
-    <div class="container" style="max-width:580px; padding:45px 0;">
-      <div class="info-card">
-        <h2 class="text-center" style="font-family:'Bebas Neue'; font-size:34px;">📧 Contact Us</h2>
-        <form onsubmit="event.preventDefault(); sendMessage();">
-          <input id="cName" class="field-input" placeholder="Your name" required>
-          <input id="cEmail" class="field-input" type="email" placeholder="Your email" required>
-          <textarea id="cMsg" class="field-textarea" rows="4" placeholder="Message (min 10 characters)" required></textarea>
-          <button type="submit" class="contact-submit">Send Message</button>
-        </form>
-        <div id="msgSuccess" style="display:none;" class="mt-3 bg-success text-center p-2 rounded">✅ Sent!</div>
-      </div>
-    </div>
-  `;
-  window.sendMessage = function() {
-    const msg = document.getElementById("cMsg")?.value;
-    if (!msg || msg.length < 10) { alert("Min 10 chars required"); return; }
-    const successDiv = document.getElementById("msgSuccess");
-    if (successDiv) successDiv.style.display = "block";
-    document.getElementById("cName").value = "";
-    document.getElementById("cEmail").value = "";
-    document.getElementById("cMsg").value = "";
-    setTimeout(() => { if (successDiv) successDiv.style.display = "none"; }, 3000);
-  };
-}
 
 function initAbout() {
   if (!checkAuth()) return;
@@ -343,7 +303,6 @@ function initAbout() {
   `;
 }
 
-// Global search function (used on all pages)
 window.searchMovie = async function() {
   const query = document.getElementById("searchInput")?.value.trim();
   if (!query) { alert("Please type something to search"); return; }
