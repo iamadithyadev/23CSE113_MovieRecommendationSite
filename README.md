@@ -33,20 +33,19 @@ Content Managers (Admins) can:
 All movie data is fetched in real time from **The Movie Database (TMDb) API**, ensuring up‑to‑date information.
 
 ## Folder Structure
+
+```
 MovieVault/
-│
-├── index.html (Home page + login)
-├── genres.html (Browse movies by genre)
-├── favorites.html (User's saved favorite movies)
-├── contact.html (Team portfolio page)
-├── about.html (About the project)
-│
-├── shared.css (Global styles)
-├── shared.js (Shared authentication, API, favorites logic)
-│
-├── surya.jpg (Banner image – optional)
-│
+├── index.html       (Home page + login)
+├── genres.html      (Browse movies by genre)
+├── favorites.html   (User's saved favorite movies)
+├── contact.html     (Team portfolio page)
+├── about.html       (About the project)
+├── shared.css       (Global styles)
+├── shared.js        (Authentication, API, favorites logic)
+├── surya.jpg        (Banner image)
 └── README.md
+```
 
 
 ## Features
