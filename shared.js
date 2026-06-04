@@ -189,7 +189,7 @@ function toggleFavorite(movieId) {
   }
   localStorage.setItem(`favs_${currentUser.name}`, JSON.stringify(favorites));
 }
-
+async function initHome() {
   if (!checkAuth()) return;
   const adminBtn = document.getElementById("adminPanelBtn");
   if (currentUser?.role === 'admin') {
