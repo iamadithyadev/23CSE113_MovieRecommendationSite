@@ -5,10 +5,10 @@
 
 Developed by:
 
-- **Adithyadev**
 - **Pranav VNG**
-- **Dhanesh S**
+- **Adithyadev**
 - **Charan Raj**
+- **Dhanesh S**
 
 ## Project Overview
 
